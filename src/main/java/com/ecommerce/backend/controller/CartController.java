@@ -5,7 +5,7 @@ import com.ecommerce.backend.dto.request.CartItemRequest;
 import com.ecommerce.backend.dto.request.UpdateCartItemRequest;
 import com.ecommerce.backend.dto.response.CartResponse;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.CartService;
+import com.ecommerce.backend.service.Interface.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

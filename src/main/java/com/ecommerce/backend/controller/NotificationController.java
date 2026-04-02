@@ -4,7 +4,7 @@ import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.common.UserHelper;
 import com.ecommerce.backend.dto.response.NotificationResponse;
-import com.ecommerce.backend.service.NotificationService;
+import com.ecommerce.backend.service.Interface.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

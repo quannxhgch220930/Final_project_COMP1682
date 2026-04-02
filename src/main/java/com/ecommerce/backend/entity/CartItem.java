@@ -16,8 +16,6 @@ import java.util.UUID;
 @Builder
 public class CartItem extends BaseEntity {
 
-    ;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;

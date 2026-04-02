@@ -4,7 +4,7 @@ import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.dto.request.ProductRequest;
 import com.ecommerce.backend.dto.response.ProductResponse;
-import com.ecommerce.backend.service.ProductService;
+import com.ecommerce.backend.service.Interface.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getAll(
             @RequestParam(required = false) String     search,
-            @RequestParam(required = false) Long       categoryId,   // String → Long
+            @RequestParam(required = false) Long       categoryId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) BigDecimal minRating,
@@ -38,7 +38,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> getById(
-            @PathVariable Long id) {        // String → Long
+            @PathVariable Long id) {
         return ResponseEntity.ok(
                 ApiResponse.success(productService.getProductById(id)));
     }
@@ -53,7 +53,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> update(
-            @PathVariable Long id,          // String → Long
+            @PathVariable Long id,
             @Valid @RequestBody ProductRequest request) {
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công",
                 productService.updateProduct(id, request)));
@@ -61,7 +61,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
-            @PathVariable Long id) {        // String → Long
+            @PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok(ApiResponse.success("Xóa sản phẩm thành công", null));
     }

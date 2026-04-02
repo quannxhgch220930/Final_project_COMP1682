@@ -11,7 +11,7 @@ import com.ecommerce.backend.mapper.WishlistMapper;
 import com.ecommerce.backend.repository.ProductRepository;
 import com.ecommerce.backend.repository.UserRepository;
 import com.ecommerce.backend.repository.WishlistRepository;
-import com.ecommerce.backend.service.WishlistService;
+import com.ecommerce.backend.service.Interface.WishlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

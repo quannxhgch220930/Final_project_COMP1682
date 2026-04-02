@@ -4,7 +4,7 @@ import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.dto.response.WishlistItemResponse;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.WishlistService;
+import com.ecommerce.backend.service.Interface.WishlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

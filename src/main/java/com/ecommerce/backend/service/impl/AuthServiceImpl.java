@@ -7,9 +7,10 @@ import com.ecommerce.backend.entity.User;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.AuthService;
+import com.ecommerce.backend.service.Interface.AuthService;
 import com.ecommerce.backend.service.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,9 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil         jwtUtil;
     private final EmailService    emailService;
 
+    @Value("${app.dev-mode:false}")
+    private boolean devMode;
+
     @Override
     @Transactional
     public void register(RegisterRequest request) {
@@ -33,19 +37,22 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
-        String verifyToken = UUID.randomUUID().toString();
+        String verifyToken = devMode ? null : UUID.randomUUID().toString();
 
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .isVerified(devMode)
                 .verifyToken(verifyToken)
-                .verifyTokenExpiry(LocalDateTime.now().plusHours(24))
+                .verifyTokenExpiry(devMode ? null : LocalDateTime.now().plusHours(24))
                 .build();
 
         userRepository.save(user);
 
-        emailService.sendVerifyEmail(user.getEmail(), user.getFullName(), verifyToken);
+        if (!devMode) {
+            emailService.sendVerifyEmail(user.getEmail(), user.getFullName(), verifyToken);
+        }
     }
 
     @Override
@@ -65,7 +72,11 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(ErrorCode.ACCOUNT_LOCKED);
         }
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        String token = jwtUtil.generateToken(
+                user.getEmail(),
+                user.getRole().name(),
+                user.getFullName(),
+                user.getId());
 
         return AuthResponse.builder()
                 .id(user.getId())

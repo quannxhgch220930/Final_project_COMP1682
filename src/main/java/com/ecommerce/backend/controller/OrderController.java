@@ -5,7 +5,7 @@ import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.common.UserHelper;
 import com.ecommerce.backend.dto.request.OrderRequest;
 import com.ecommerce.backend.dto.response.OrderResponse;
-import com.ecommerce.backend.service.OrderService;
+import com.ecommerce.backend.service.Interface.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

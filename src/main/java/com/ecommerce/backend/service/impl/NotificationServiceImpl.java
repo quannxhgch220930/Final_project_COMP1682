@@ -10,7 +10,7 @@ import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.mapper.NotificationMapper;
 import com.ecommerce.backend.repository.NotificationRepository;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.NotificationService;
+import com.ecommerce.backend.service.Interface.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

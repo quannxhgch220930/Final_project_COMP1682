@@ -8,7 +8,7 @@ import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.repository.AddressRepository;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.AddressService;
+import com.ecommerce.backend.service.Interface.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

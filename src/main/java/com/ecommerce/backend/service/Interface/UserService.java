@@ -1,4 +1,4 @@
-package com.ecommerce.backend.service;
+package com.ecommerce.backend.service.Interface;
 
 import com.ecommerce.backend.dto.request.UpdateProfileRequest;
 import com.ecommerce.backend.dto.response.UserResponse;

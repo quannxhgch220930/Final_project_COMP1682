@@ -1,11 +1,9 @@
-package com.ecommerce.backend.service;
+package com.ecommerce.backend.service.Interface;
 
 import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.dto.request.OrderRequest;
 import com.ecommerce.backend.dto.request.UpdateOrderStatusRequest;
 import com.ecommerce.backend.dto.response.OrderResponse;
-
-import java.util.UUID;
 
 public interface OrderService {
     OrderResponse checkout(Long userId, OrderRequest request);

@@ -4,7 +4,7 @@ import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.UserHelper;
 import com.ecommerce.backend.dto.request.AddressRequest;
 import com.ecommerce.backend.dto.response.AddressResponse;
-import com.ecommerce.backend.service.AddressService;
+import com.ecommerce.backend.service.Interface.AddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

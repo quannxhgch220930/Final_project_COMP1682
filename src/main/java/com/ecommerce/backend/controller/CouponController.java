@@ -6,7 +6,7 @@ import com.ecommerce.backend.dto.request.CouponRequest;
 import com.ecommerce.backend.dto.request.CouponValidateRequest;
 import com.ecommerce.backend.dto.response.CouponResponse;
 import com.ecommerce.backend.entity.Coupon;
-import com.ecommerce.backend.service.CouponService;
+import com.ecommerce.backend.service.Interface.CouponService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

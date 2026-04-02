@@ -4,7 +4,7 @@ import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.UserHelper;
 import com.ecommerce.backend.dto.request.*;
 import com.ecommerce.backend.dto.response.AuthResponse;
-import com.ecommerce.backend.service.AuthService;
+import com.ecommerce.backend.service.Interface.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,6 @@ public class AuthController {
     private final AuthService authService;
     private final UserHelper userHelper;
 
-    // POST /auth/register
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> register(
             @Valid @RequestBody RegisterRequest request) {
@@ -33,7 +32,6 @@ public class AuthController {
                         "Đăng ký thành công! Vui lòng kiểm tra email để xác thực.", null));
     }
 
-    // POST /auth/login
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody LoginRequest request) {
@@ -41,7 +39,6 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", response));
     }
 
-    // GET /auth/verify?token=xxx
     @GetMapping("/verify")
     public ResponseEntity<ApiResponse<Void>> verify(@RequestParam String token) {
         authService.verifyEmail(token);
@@ -49,7 +46,6 @@ public class AuthController {
                 ApiResponse.success("Xác thực email thành công! Bạn có thể đăng nhập.", null));
     }
 
-    // POST /auth/resend-verify
     @PostMapping("/resend-verify")
     public ResponseEntity<ApiResponse<Void>> resendVerify(@RequestParam String email) {
         authService.resendVerifyEmail(email);
@@ -57,7 +53,6 @@ public class AuthController {
                 ApiResponse.success("Email xác thực đã được gửi lại.", null));
     }
 
-    // POST /auth/forgot-password
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Void>> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request) {
@@ -66,7 +61,6 @@ public class AuthController {
                 "Vui lòng kiểm tra email để đặt lại mật khẩu", null));
     }
 
-    // POST /auth/reset-password
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<Void>> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
@@ -75,7 +69,6 @@ public class AuthController {
                 "Đặt lại mật khẩu thành công", null));
     }
 
-    // POST /auth/change-password
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @AuthenticationPrincipal UserDetails userDetails,

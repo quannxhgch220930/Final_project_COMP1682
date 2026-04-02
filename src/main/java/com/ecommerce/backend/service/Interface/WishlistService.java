@@ -1,9 +1,7 @@
-package com.ecommerce.backend.service;
+package com.ecommerce.backend.service.Interface;
 
 import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.dto.response.WishlistItemResponse;
-
-import java.util.UUID;
 
 public interface WishlistService {
     PageResponse<WishlistItemResponse> getWishlist(Long userId, int page, int size);

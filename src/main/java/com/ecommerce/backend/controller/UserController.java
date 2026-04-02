@@ -4,7 +4,7 @@ import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.UserHelper;
 import com.ecommerce.backend.dto.request.UpdateProfileRequest;
 import com.ecommerce.backend.dto.response.UserResponse;
-import com.ecommerce.backend.service.UserService;
+import com.ecommerce.backend.service.Interface.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

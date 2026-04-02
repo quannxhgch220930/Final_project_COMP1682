@@ -13,7 +13,7 @@ import com.ecommerce.backend.mapper.CategoryMapper;
 import com.ecommerce.backend.mapper.ProductMapper;
 import com.ecommerce.backend.repository.CategoryRepository;
 import com.ecommerce.backend.repository.ProductRepository;
-import com.ecommerce.backend.service.ProductService;
+import com.ecommerce.backend.service.Interface.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

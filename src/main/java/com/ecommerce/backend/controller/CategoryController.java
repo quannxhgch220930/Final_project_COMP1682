@@ -3,7 +3,7 @@ package com.ecommerce.backend.controller;
 import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.dto.request.CategoryRequest;
 import com.ecommerce.backend.dto.response.CategoryResponse;
-import com.ecommerce.backend.service.ProductService;
+import com.ecommerce.backend.service.Interface.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,13 +1,11 @@
-package com.ecommerce.backend.service;
+package com.ecommerce.backend.service.Interface;
 
 import com.ecommerce.backend.dto.request.CouponRequest;
-import com.ecommerce.backend.dto.request.CouponValidateRequest;
 import com.ecommerce.backend.dto.response.CouponResponse;
 import com.ecommerce.backend.entity.Coupon;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 public interface CouponService {
     CouponResponse createCoupon(Long adminId, CouponRequest request);

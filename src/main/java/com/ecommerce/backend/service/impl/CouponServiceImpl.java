@@ -10,7 +10,7 @@ import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.mapper.CouponMapper;
 import com.ecommerce.backend.repository.CouponRepository;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.CouponService;
+import com.ecommerce.backend.service.Interface.CouponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

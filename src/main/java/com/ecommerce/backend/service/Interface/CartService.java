@@ -1,10 +1,8 @@
-package com.ecommerce.backend.service;
+package com.ecommerce.backend.service.Interface;
 
 import com.ecommerce.backend.dto.request.CartItemRequest;
 import com.ecommerce.backend.dto.request.UpdateCartItemRequest;
 import com.ecommerce.backend.dto.response.CartResponse;
-
-import java.util.UUID;
 
 public interface CartService {
     CartResponse getCart(Long userId);

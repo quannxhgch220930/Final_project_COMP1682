@@ -7,8 +7,9 @@ import com.ecommerce.backend.dto.response.UserResponse;
 import com.ecommerce.backend.entity.User;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
+import com.ecommerce.backend.mapper.UserMapper;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.AdminService;
+import com.ecommerce.backend.service.Interface.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminServiceImpl implements AdminService {
 
     private final UserRepository userRepository;
+    private final UserMapper     userMapper;
 
     @Override
     public PageResponse<UserResponse> getAllUsers(int page, int size) {
@@ -29,7 +31,7 @@ public class AdminServiceImpl implements AdminService {
 
         return PageResponse.<UserResponse>builder()
                 .content(userPage.getContent().stream()
-                        .map(this::toUserResponse).toList())
+                        .map(userMapper::toUserResponse).toList())
                 .page(userPage.getNumber())
                 .size(userPage.getSize())
                 .totalElements(userPage.getTotalElements())
@@ -42,7 +44,7 @@ public class AdminServiceImpl implements AdminService {
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return toUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class AdminServiceImpl implements AdminService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setLocked(request.getLocked());
-        return toUserResponse(userRepository.save(user));
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     @Override
@@ -60,7 +62,7 @@ public class AdminServiceImpl implements AdminService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setRole(request.getRole());
-        return toUserResponse(userRepository.save(user));
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     @Override
@@ -69,20 +71,5 @@ public class AdminServiceImpl implements AdminService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         userRepository.delete(user);
-    }
-
-    // ── Helper ──────────────────────────────────────────
-    private UserResponse toUserResponse(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .avatarUrl(user.getAvatarUrl())
-                .role(user.getRole())
-                .isVerified(user.isVerified())
-                .isLocked(user.isLocked())
-                .provider(user.getProvider())
-                .createdAt(user.getCreatedAt())
-                .build();
     }
 }

@@ -10,10 +10,10 @@ import java.util.UUID;
 @Data
 @Builder
 public class CategoryResponse {
-    private Long             id;
-    private String             name;
-    private String             slug;
-    private Long               parentId;
+    private Long id;
+    private String name;
+    private String slug;
+    private Long parentId;
     private List<CategoryResponse> children;
-    private LocalDateTime      createdAt;
+    private LocalDateTime createdAt;
 }
