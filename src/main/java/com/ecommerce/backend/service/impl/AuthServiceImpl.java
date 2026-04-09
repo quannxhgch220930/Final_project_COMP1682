@@ -37,6 +37,10 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
         String verifyToken = devMode ? null : UUID.randomUUID().toString();
 
         User user = User.builder()

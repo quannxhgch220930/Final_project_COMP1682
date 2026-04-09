@@ -19,4 +19,7 @@ public class RegisterRequest {
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 8, max = 255, message = "Mật khẩu phải từ 8-255 ký tự")
     private String password;
+
+    @NotBlank(message = "Mật khẩu xác nhận không được để trống")
+    private String confirmPassword;
 }
