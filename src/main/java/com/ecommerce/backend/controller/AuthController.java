@@ -2,7 +2,11 @@ package com.ecommerce.backend.controller;
 
 import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.UserHelper;
-import com.ecommerce.backend.dto.request.*;
+import com.ecommerce.backend.dto.request.ChangePasswordRequest;
+import com.ecommerce.backend.dto.request.ForgotPasswordRequest;
+import com.ecommerce.backend.dto.request.LoginRequest;
+import com.ecommerce.backend.dto.request.RegisterRequest;
+import com.ecommerce.backend.dto.request.ResetPasswordRequest;
 import com.ecommerce.backend.dto.response.AuthResponse;
 import com.ecommerce.backend.service.Interface.AuthService;
 import jakarta.validation.Valid;
@@ -11,8 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserHelper userHelper;
+    private final UserHelper  userHelper;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> register(
@@ -36,14 +44,21 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", response));
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công!", response));
+    }
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> adminLogin(
+            @Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.adminLogin(request);
+        return ResponseEntity.ok(ApiResponse.success("Đănh nhập admin thành công!", response));
     }
 
     @GetMapping("/verify")
     public ResponseEntity<ApiResponse<Void>> verify(@RequestParam String token) {
         authService.verifyEmail(token);
         return ResponseEntity.ok(
-                ApiResponse.success("Xác thực email thành công! Bạn có thể đăng nhập.", null));
+                ApiResponse.success("Xác thực email thành công! Bạn có thể Đăng nhập.", null));
     }
 
     @PostMapping("/resend-verify")
@@ -66,7 +81,7 @@ public class AuthController {
             @Valid @RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request);
         return ResponseEntity.ok(ApiResponse.success(
-                "Đặt lại mật khẩu thành công", null));
+                "Đặt lại mật khẩu thành công!", null));
     }
 
     @PostMapping("/change-password")
@@ -74,6 +89,6 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(userHelper.getUserId(userDetails), request);
-        return ResponseEntity.ok(ApiResponse.success("Đổi mật khẩu thành công", null));
+        return ResponseEntity.ok(ApiResponse.success("Đổi mật khẩu thành công!", null));
     }
 }

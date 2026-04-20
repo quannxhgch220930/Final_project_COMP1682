@@ -9,6 +9,7 @@ import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.repository.UserRepository;
 import com.ecommerce.backend.service.Interface.AuthService;
 import com.ecommerce.backend.service.EmailService;
+import com.ecommerce.backend.entity.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,36 +62,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
+        return loginByRole(request, Role.USER);
+    }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
-        }
-
-        if (!user.isVerified()) {
-            throw new AppException(ErrorCode.ACCOUNT_NOT_VERIFIED);
-        }
-
-        if (user.isLocked()) {
-            throw new AppException(ErrorCode.ACCOUNT_LOCKED);
-        }
-
-        String token = jwtUtil.generateToken(
-                user.getEmail(),
-                user.getRole().name(),
-                user.getFullName(),
-                user.getId());
-
-        return AuthResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .avatarUrl(user.getAvatarUrl())
-                .role(user.getRole())
-                .accessToken(token)
-                .tokenType("Bearer")
-                .build();
+    @Override
+    public AuthResponse adminLogin(LoginRequest request) {
+        return loginByRole(request, Role.ADMIN);
     }
 
     @Override
@@ -179,5 +156,50 @@ public class AuthServiceImpl implements AuthService {
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    private AuthResponse loginByRole(LoginRequest request, Role expectedRole) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        if (!user.isVerified()) {
+            throw new AppException(ErrorCode.ACCOUNT_NOT_VERIFIED);
+        }
+
+        if (user.isLocked()) {
+            throw new AppException(ErrorCode.ACCOUNT_LOCKED);
+        }
+
+        if (user.getRole() != expectedRole) {
+            throw new AppException(getLoginPortalError(user.getRole()));
+        }
+
+        String token = jwtUtil.generateToken(
+                user.getEmail(),
+                user.getRole().name(),
+                user.getFullName(),
+                user.getId());
+
+        return AuthResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .avatarUrl(user.getAvatarUrl())
+                .role(user.getRole())
+                .accessToken(token)
+                .tokenType("Bearer")
+                .build();
+    }
+
+    private ErrorCode getLoginPortalError(Role actualRole) {
+        if (actualRole == Role.ADMIN) {
+            return ErrorCode.ADMIN_LOGIN;
+        }
+
+        return ErrorCode.USER_LOGIN;
     }
 }

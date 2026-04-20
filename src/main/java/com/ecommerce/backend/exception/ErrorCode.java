@@ -15,6 +15,8 @@ public enum ErrorCode {
     UNAUTHORIZED            (401, "Bạn cần đăng nhập để thực hiện",     HttpStatus.UNAUTHORIZED),
     PASSWORD_NOT_MATCH  (400, "Mật khẩu xác nhận không khớp",           HttpStatus.BAD_REQUEST),
     PASSWORD_SAME_AS_OLD(400, "Mật khẩu mới không được trùng mật khẩu cũ", HttpStatus.BAD_REQUEST),
+    USER_LOGIN(403, "Bạn không có quyền đăng nhập tại trang quản trị", HttpStatus.FORBIDDEN),
+    ADMIN_LOGIN(403, "Hãy đăng nhập tại trang quản trị", HttpStatus.FORBIDDEN),
 
     // Product & Category
     PRODUCT_NOT_FOUND       (404, "Không tìm thấy sản phẩm",            HttpStatus.NOT_FOUND),

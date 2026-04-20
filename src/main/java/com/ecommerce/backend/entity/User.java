@@ -19,10 +19,10 @@ import java.time.LocalDateTime;
 public class User extends BaseEntity {
 
 
-    @Column(name = "email", nullable = false, unique = true, length = 255)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", length = 255)
+    @Column(name = "password_hash")
     private String passwordHash;
 
     @Column(name = "full_name", nullable = false, length = 100)
@@ -49,11 +49,11 @@ public class User extends BaseEntity {
     @Builder.Default
     private Provider provider = Provider.LOCAL;
 
-    @Column(name = "provider_id", length = 255)
+    @Column(name = "provider_id")
     private String providerId;
 
     // Token dùng để xác thực email
-    @Column(name = "verify_token", length = 255)
+    @Column(name = "verify_token")
     private String verifyToken;
 
     @Column(name = "verify_token_expiry")

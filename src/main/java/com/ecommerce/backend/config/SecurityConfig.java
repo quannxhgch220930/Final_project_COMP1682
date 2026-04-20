@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 public class SecurityConfig {
 
     private final JwtAuthFilter        jwtAuthFilter;
+    private final OAuth2FailureHandler oauth2FailureHandler;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
 
     @Bean
@@ -39,7 +40,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessHandler))
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oauth2SuccessHandler)
+                        .failureHandler(oauth2FailureHandler))
                 .build();
     }
 
@@ -55,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,
                                 "/auth/register",
                                 "/auth/login",
+                                "/auth/admin/login",
                                 "/auth/resend-verify",
                                 "/auth/forgot-password",
                                 "/auth/reset-password"

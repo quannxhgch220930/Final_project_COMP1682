@@ -22,12 +22,12 @@ public class Category extends BaseEntity {
     @Column(name = "slug", nullable = false, unique = true, length = 120)
     private String slug;
 
-    @ManyToOne(fetch = FetchType.EAGER)   // ← thêm EAGER
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
     private Category parent;
 
     @OneToMany(mappedBy = "parent",
-            fetch = FetchType.EAGER,   // ← thêm EAGER
+            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
     @Builder.Default
     private List<Category> children = new ArrayList<>();
