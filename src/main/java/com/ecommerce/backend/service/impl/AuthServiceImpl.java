@@ -1,15 +1,19 @@
 package com.ecommerce.backend.service.impl;
 
 import com.ecommerce.backend.common.JwtUtil;
-import com.ecommerce.backend.dto.request.*;
+import com.ecommerce.backend.dto.request.ChangePasswordRequest;
+import com.ecommerce.backend.dto.request.ForgotPasswordRequest;
+import com.ecommerce.backend.dto.request.LoginRequest;
+import com.ecommerce.backend.dto.request.RegisterRequest;
+import com.ecommerce.backend.dto.request.ResetPasswordRequest;
 import com.ecommerce.backend.dto.response.AuthResponse;
 import com.ecommerce.backend.entity.User;
+import com.ecommerce.backend.entity.enums.Role;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.repository.UserRepository;
-import com.ecommerce.backend.service.Interface.AuthService;
 import com.ecommerce.backend.service.EmailService;
-import com.ecommerce.backend.entity.enums.Role;
+import com.ecommerce.backend.service.Interface.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +27,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserRepository  userRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil         jwtUtil;
-    private final EmailService    emailService;
+    private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     @Value("${app.dev-mode:false}")
     private boolean devMode;
@@ -92,7 +96,9 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        if (user.isVerified()) return;
+        if (user.isVerified()) {
+            return;
+        }
 
         String newToken = UUID.randomUUID().toString();
         user.setVerifyToken(newToken);
@@ -107,13 +113,11 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        // Tạo reset token
         String token = UUID.randomUUID().toString();
         user.setResetToken(token);
         user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(15));
         userRepository.save(user);
 
-        // Gửi email
         emailService.sendResetPasswordEmail(user.getEmail(), user.getFullName(), token);
     }
 
@@ -122,12 +126,18 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByResetToken(request.getToken())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_TOKEN));
 
-        // Kiểm tra token hết hạn
         if (user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
             throw new AppException(ErrorCode.TOKEN_EXPIRED);
         }
 
-        // Đổi mật khẩu
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPasswordHash())) {
+            throw new AppException(ErrorCode.PASSWORD_SAME_AS_OLD);
+        }
+
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
@@ -139,17 +149,14 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        // Kiểm tra mật khẩu hiện tại
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        // Kiểm tra mật khẩu mới và xác nhận
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
         }
 
-        // Kiểm tra mật khẩu mới không trùng mật khẩu cũ
         if (passwordEncoder.matches(request.getNewPassword(), user.getPasswordHash())) {
             throw new AppException(ErrorCode.PASSWORD_SAME_AS_OLD);
         }

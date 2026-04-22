@@ -6,10 +6,13 @@ import lombok.Data;
 
 @Data
 public class ResetPasswordRequest {
-    @NotBlank(message = "Token không được để trống")
+    @NotBlank(message = "Token khong duoc de trong")
     private String token;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
+    @NotBlank(message = "Mat khau khong duoc de trong")
+    @Size(min = 8, message = "Mat khau phai co it nhat 8 ky tu")
     private String newPassword;
+
+    @NotBlank(message = "Xac nhan mat khau khong duoc de trong")
+    private String confirmPassword;
 }

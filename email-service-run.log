@@ -1,0 +1,146 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.3)
+
+2026-04-21T18:52:41.441+07:00  INFO 5980 --- [ecommerce-backend] [           main] c.ecommerce.backend.BackendApplication   : Starting BackendApplication v0.0.1-SNAPSHOT using Java 25.0.2 with PID 5980 (D:\SRPINGBOOTDEMO\Backend\build\libs\backend-0.0.1-SNAPSHOT.jar started by LOQ in D:\SRPINGBOOTDEMO\Backend)
+2026-04-21T18:52:41.449+07:00 DEBUG 5980 --- [ecommerce-backend] [           main] c.ecommerce.backend.BackendApplication   : Running with Spring Boot v4.0.3, Spring v7.0.5
+2026-04-21T18:52:41.450+07:00  INFO 5980 --- [ecommerce-backend] [           main] c.ecommerce.backend.BackendApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-04-21T18:52:42.450+07:00  INFO 5980 --- [ecommerce-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-21T18:52:42.545+07:00  INFO 5980 --- [ecommerce-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 80 ms. Found 13 JPA repository interfaces.
+2026-04-21T18:52:43.219+07:00  INFO 5980 --- [ecommerce-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-21T18:52:43.234+07:00  INFO 5980 --- [ecommerce-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-21T18:52:43.234+07:00  INFO 5980 --- [ecommerce-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-04-21T18:52:43.269+07:00  INFO 5980 --- [ecommerce-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1753 ms
+2026-04-21T18:52:43.436+07:00  INFO 5980 --- [ecommerce-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-21T18:52:43.505+07:00  INFO 5980 --- [ecommerce-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-04-21T18:52:43.971+07:00  INFO 5980 --- [ecommerce-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-21T18:52:44.002+07:00  INFO 5980 --- [ecommerce-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-21T18:52:44.130+07:00  INFO 5980 --- [ecommerce-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@357cdb00
+2026-04-21T18:52:44.132+07:00  INFO 5980 --- [ecommerce-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-21T18:52:44.210+07:00  INFO 5980 --- [ecommerce-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/ecommerce_db?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.45
+	Default catalog/schema: ecommerce_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-21T18:52:45.615+07:00  INFO 5980 --- [ecommerce-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    alter table coupons 
+       modify column type enum ('FIXED','PERCENT') not null
+Hibernate: 
+    alter table notifications 
+       modify column type enum ('COUPON','ORDER','SYSTEM','WISHLIST') not null
+Hibernate: 
+    alter table order_status_logs 
+       modify column status enum ('CANCELLED','CONFIRMED','DELIVERED','PENDING','PROCESSING','SHIPPING') not null
+Hibernate: 
+    alter table orders 
+       modify column status enum ('CANCELLED','CONFIRMED','DELIVERED','PENDING','PROCESSING','SHIPPING') not null
+Hibernate: 
+    alter table users 
+       modify column provider enum ('GOOGLE','LOCAL') not null
+Hibernate: 
+    alter table users 
+       modify column role enum ('ADMIN','USER') not null
+2026-04-21T18:52:45.788+07:00  INFO 5980 --- [ecommerce-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-21T18:52:45.848+07:00  INFO 5980 --- [ecommerce-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-21T18:52:46.033+07:00 DEBUG 5980 --- [ecommerce-backend] [           main] c.e.backend.config.JwtAuthFilter         : Filter 'jwtAuthFilter' configured for use
+2026-04-21T18:52:47.377+07:00  INFO 5980 --- [ecommerce-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-04-21T18:52:47.646+07:00 DEBUG 5980 --- [ecommerce-backend] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 58 mappings in 'requestMappingHandlerMapping'
+2026-04-21T18:52:47.679+07:00 DEBUG 5980 --- [ecommerce-backend] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-04-21T18:52:47.718+07:00 DEBUG 5980 --- [ecommerce-backend] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 2 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-04-21T18:52:47.770+07:00 DEBUG 5980 --- [ecommerce-backend] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-04-21T18:52:47.954+07:00  INFO 5980 --- [ecommerce-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-21T18:52:47.967+07:00  INFO 5980 --- [ecommerce-backend] [           main] c.ecommerce.backend.BackendApplication   : Started BackendApplication in 6.918 seconds (process running for 7.492)
+2026-04-21T18:53:03.011+07:00  INFO 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-21T18:53:03.012+07:00  INFO 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-21T18:53:03.014+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2026-04-21T18:53:03.014+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2026-04-21T18:53:03.016+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@52336a97
+2026-04-21T18:53:03.017+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@7d51d634
+2026-04-21T18:53:03.018+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-04-21T18:53:03.018+07:00  INFO 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-04-21T18:53:03.050+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : POST "/auth/forgot-password", parameters={}
+2026-04-21T18:53:03.062+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.ecommerce.backend.controller.AuthController#forgotPassword(ForgotPasswordRequest)
+2026-04-21T18:53:03.208+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [ForgotPasswordRequest(email=test123@gmail.com)]
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar_url,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_locked,
+        u1_0.is_verified,
+        u1_0.password_hash,
+        u1_0.provider,
+        u1_0.provider_id,
+        u1_0.reset_token,
+        u1_0.reset_token_expiry,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.verify_token,
+        u1_0.verify_token_expiry 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar_url,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_locked,
+        u1_0.is_verified,
+        u1_0.password_hash,
+        u1_0.provider,
+        u1_0.provider_id,
+        u1_0.reset_token,
+        u1_0.reset_token_expiry,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.verify_token,
+        u1_0.verify_token_expiry 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    update
+        users 
+    set
+        avatar_url=?,
+        email=?,
+        full_name=?,
+        is_locked=?,
+        is_verified=?,
+        password_hash=?,
+        provider=?,
+        provider_id=?,
+        reset_token=?,
+        reset_token_expiry=?,
+        role=?,
+        updated_at=?,
+        verify_token=?,
+        verify_token_expiry=? 
+    where
+        id=?
+[MAIL] Dang gui email reset password den: test123@gmail.com
+2026-04-21T18:53:03.696+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-04-21T18:53:03.698+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.ecommerce.backend.common.ApiResponse@156418af]
+2026-04-21T18:53:03.746+07:00 DEBUG 5980 --- [ecommerce-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+[MAIL] Gui thanh cong den: test123@gmail.com

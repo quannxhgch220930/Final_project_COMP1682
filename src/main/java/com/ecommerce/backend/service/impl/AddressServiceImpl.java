@@ -20,12 +20,14 @@ import java.util.List;
 public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
-    private final UserRepository    userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<AddressResponse> getAll(Long userId) {
-        return addressRepository.findByUserIdOrderByIsDefaultDesc(userId)
-                .stream().map(this::toResponse).toList();
+        return addressRepository.findByUserIdOrderByIdDesc(userId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @Override
@@ -33,15 +35,6 @@ public class AddressServiceImpl implements AddressService {
     public AddressResponse create(Long userId, AddressRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        // Nếu là địa chỉ mặc định → reset các địa chỉ khác
-        if (request.isDefault()) {
-            addressRepository.resetDefault(userId);
-        }
-
-        // Nếu chưa có địa chỉ nào → tự động set mặc định
-        boolean hasAddress = !addressRepository
-                .findByUserIdOrderByIsDefaultDesc(userId).isEmpty();
 
         Address address = Address.builder()
                 .user(user)
@@ -51,7 +44,6 @@ public class AddressServiceImpl implements AddressService {
                 .district(request.getDistrict())
                 .ward(request.getWard())
                 .street(request.getStreet())
-                .isDefault(!hasAddress || request.isDefault())
                 .build();
 
         return toResponse(addressRepository.save(address));
@@ -63,13 +55,8 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_FOUND));
 
-        // Kiểm tra địa chỉ có thuộc user không
         if (!address.getUser().getId().equals(userId)) {
             throw new AppException(ErrorCode.FORBIDDEN);
-        }
-
-        if (request.isDefault()) {
-            addressRepository.resetDefault(userId);
         }
 
         address.setReceiverName(request.getReceiverName());
@@ -78,7 +65,6 @@ public class AddressServiceImpl implements AddressService {
         address.setDistrict(request.getDistrict());
         address.setWard(request.getWard());
         address.setStreet(request.getStreet());
-        address.setDefault(request.isDefault());
 
         return toResponse(addressRepository.save(address));
     }
@@ -96,35 +82,19 @@ public class AddressServiceImpl implements AddressService {
         addressRepository.delete(address);
     }
 
-    @Override
-    @Transactional
-    public AddressResponse setDefault(Long userId, Long addressId) {
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_FOUND));
+    private AddressResponse toResponse(Address address) {
+        String fullAddress = address.getStreet() + ", " + address.getWard()
+                + ", " + address.getDistrict() + ", " + address.getProvince();
 
-        if (!address.getUser().getId().equals(userId)) {
-            throw new AppException(ErrorCode.FORBIDDEN);
-        }
-
-        addressRepository.resetDefault(userId);
-        address.setDefault(true);
-        return toResponse(addressRepository.save(address));
-    }
-
-    // ── Helper ──────────────────────────────────────────
-    private AddressResponse toResponse(Address a) {
-        String fullAddress = a.getStreet() + ", " + a.getWard()
-                + ", " + a.getDistrict() + ", " + a.getProvince();
         return AddressResponse.builder()
-                .id(a.getId())
-                .receiverName(a.getReceiverName())
-                .receiverPhone(a.getReceiverPhone())
-                .province(a.getProvince())
-                .district(a.getDistrict())
-                .ward(a.getWard())
-                .street(a.getStreet())
+                .id(address.getId())
+                .receiverName(address.getReceiverName())
+                .receiverPhone(address.getReceiverPhone())
+                .province(address.getProvince())
+                .district(address.getDistrict())
+                .ward(address.getWard())
+                .street(address.getStreet())
                 .fullAddress(fullAddress)
-                .isDefault(a.isDefault())
                 .build();
     }
 }

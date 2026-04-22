@@ -33,7 +33,4 @@ public class Address extends BaseEntity {
 
     @Column(name = "street", nullable = false, length = 255)
     private String street;
-
-    @Column(name = "is_default")
-    private boolean isDefault = false;
 }

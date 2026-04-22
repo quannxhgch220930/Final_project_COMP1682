@@ -20,10 +20,7 @@ public class OrderRequest {
     @NotBlank(message = "Địa chỉ giao hàng không được để trống")
     private String receiverAddress;
 
-    // Mã coupon — nullable
     private String couponCode;
 
     private String note;
-
-
 }
