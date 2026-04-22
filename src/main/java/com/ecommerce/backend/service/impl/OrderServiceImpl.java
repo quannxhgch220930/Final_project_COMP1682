@@ -86,9 +86,9 @@ public class OrderServiceImpl implements OrderService {
                 .subtotal(subtotal)
                 .discountAmount(discountAmount)
                 .total(total)
-                .shippingName(request.getReceiverName())
-                .shippingPhone(request.getReceiverPhone())
-                .shippingAddress(request.getReceiverAddress())
+                .receiverName(request.getReceiverName())
+                .receiverPhone(request.getReceiverPhone())
+                .receiverAddress(request.getReceiverAddress())
                 .note(request.getNote())
                 .build();
 

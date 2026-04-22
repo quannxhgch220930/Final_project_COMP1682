@@ -43,14 +43,14 @@ public class Order extends BaseEntity {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
 
-    @Column(name = "shipping_name", nullable = false, length = 100)
-    private String shippingName;
+    @Column(name = "receiver_name", nullable = false, length = 100)
+    private String receiverName;
 
-    @Column(name = "shipping_phone", nullable = false, length = 20)
-    private String shippingPhone;
+    @Column(name = "receiver_phone", nullable = false, length = 20)
+    private String receiverPhone;
 
-    @Column(name = "shipping_address", nullable = false, columnDefinition = "TEXT")
-    private String shippingAddress;
+    @Column(name = "receiver_address", nullable = false, columnDefinition = "TEXT")
+    private String receiverAddress;
 
     @Column(columnDefinition = "TEXT")
     private String note;
