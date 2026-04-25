@@ -3,6 +3,7 @@ package com.ecommerce.backend.controller;
 import com.ecommerce.backend.common.ApiResponse;
 import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.common.UserHelper;
+import com.ecommerce.backend.dto.request.UpdateProductImageRequest;
 import com.ecommerce.backend.dto.request.UpdateLockRequest;
 import com.ecommerce.backend.dto.request.UpdateOrderStatusRequest;
 import com.ecommerce.backend.dto.request.UpdateRoleRequest;
@@ -66,6 +67,18 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(
                 "Product image uploaded successfully",
                 productImageService.uploadProductImage(id, file, isPrimary, sortOrder)));
+    }
+
+    @PatchMapping("/products/images/{imageId}")
+    public ResponseEntity<ApiResponse<ProductImageResponse>> updateProductImage(
+            @PathVariable Long imageId,
+            @RequestBody UpdateProductImageRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(
+                "Product image updated successfully",
+                productImageService.updateProductImage(
+                        imageId,
+                        request.getIsPrimary(),
+                        request.getSortOrder())));
     }
 
     @DeleteMapping("/products/images/{imageId}")

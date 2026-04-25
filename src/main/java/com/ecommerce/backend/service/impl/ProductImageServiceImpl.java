@@ -44,11 +44,36 @@ public class ProductImageServiceImpl implements ProductImageService {
                 .build();
 
         ProductImage savedImage = productImageRepository.save(productImage);
+        return toResponse(savedImage);
+    }
+
+    @Override
+    @Transactional
+    public ProductImageResponse updateProductImage(Long imageId, Boolean isPrimary, Integer sortOrder) {
+        ProductImage productImage = productImageRepository.findById(imageId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_IMAGE_NOT_FOUND));
+
+        if (isPrimary != null) {
+            if (isPrimary) {
+                productImageRepository.clearPrimaryByProductId(productImage.getProduct().getId());
+            }
+            productImage.setPrimary(isPrimary);
+        }
+
+        if (sortOrder != null) {
+            productImage.setSortOrder(sortOrder);
+        }
+
+        ProductImage savedImage = productImageRepository.save(productImage);
+        return toResponse(savedImage);
+    }
+
+    private ProductImageResponse toResponse(ProductImage productImage) {
         return ProductImageResponse.builder()
-                .id(savedImage.getId())
-                .url(savedImage.getUrl())
-                .isPrimary(savedImage.isPrimary())
-                .sortOrder(savedImage.getSortOrder())
+                .id(productImage.getId())
+                .url(productImage.getUrl())
+                .isPrimary(productImage.isPrimary())
+                .sortOrder(productImage.getSortOrder())
                 .build();
     }
 

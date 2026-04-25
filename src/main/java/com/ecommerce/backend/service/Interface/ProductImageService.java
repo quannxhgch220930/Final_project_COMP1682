@@ -5,5 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductImageService {
     ProductImageResponse uploadProductImage(Long productId, MultipartFile file, boolean isPrimary, Integer sortOrder);
+    ProductImageResponse updateProductImage(Long imageId, Boolean isPrimary, Integer sortOrder);
     void deleteProductImage(Long imageId);
 }
