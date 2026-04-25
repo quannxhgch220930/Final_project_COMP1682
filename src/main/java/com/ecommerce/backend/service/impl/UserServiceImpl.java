@@ -3,10 +3,12 @@ package com.ecommerce.backend.service.impl;
 import com.ecommerce.backend.dto.request.UpdateProfileRequest;
 import com.ecommerce.backend.dto.response.UserResponse;
 import com.ecommerce.backend.entity.User;
+import com.ecommerce.backend.entity.enums.NotificationType;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.mapper.UserMapper;
 import com.ecommerce.backend.repository.UserRepository;
+import com.ecommerce.backend.service.Interface.NotificationService;
 import com.ecommerce.backend.service.Interface.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final NotificationService notificationService;
 
     @Override
     public UserResponse getProfile(Long userId) {
@@ -37,6 +40,14 @@ public class UserServiceImpl implements UserService {
             user.setAvatarUrl(request.getAvatarUrl());
         }
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+        notificationService.push(
+                userId,
+                NotificationType.SYSTEM,
+                "Profile updated",
+                "Your profile information was updated successfully.",
+                savedUser.getId());
+
+        return userMapper.toUserResponse(savedUser);
     }
 }

@@ -20,6 +20,7 @@ public enum ErrorCode {
 
     // Product & Category
     PRODUCT_NOT_FOUND(404, "Product not found", HttpStatus.NOT_FOUND),
+    PRODUCT_IMAGE_NOT_FOUND(404, "Product image not found", HttpStatus.NOT_FOUND),
     PRODUCT_SLUG_EXISTS(400, "Product slug already exists", HttpStatus.BAD_REQUEST),
     CATEGORY_NOT_FOUND(404, "Category not found", HttpStatus.NOT_FOUND),
     CATEGORY_ALREADY_EXISTS(400, "Category name already exists", HttpStatus.BAD_REQUEST),
@@ -34,6 +35,7 @@ public enum ErrorCode {
     // Order
     ORDER_NOT_FOUND(404, "Order not found", HttpStatus.NOT_FOUND),
     ORDER_CANNOT_CANCEL(400, "Order cannot be canceled in its current status", HttpStatus.BAD_REQUEST),
+    INVALID_ORDER_STATUS_TRANSITION(400, "Invalid order status transition", HttpStatus.BAD_REQUEST),
     CART_EMPTY(400, "Cart is empty", HttpStatus.BAD_REQUEST),
 
     // Coupon

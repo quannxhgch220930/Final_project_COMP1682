@@ -6,9 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
@@ -17,5 +16,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Modifying
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.user.id = :userId")
-    void markAllAsRead(Long userId);
+    void markAllAsRead(@Param("userId") Long userId);
 }

@@ -4,13 +4,24 @@ import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.dto.request.OrderRequest;
 import com.ecommerce.backend.dto.request.UpdateOrderStatusRequest;
 import com.ecommerce.backend.dto.response.OrderResponse;
-import com.ecommerce.backend.entity.*;
+import com.ecommerce.backend.entity.Cart;
+import com.ecommerce.backend.entity.CartItem;
+import com.ecommerce.backend.entity.Coupon;
+import com.ecommerce.backend.entity.Order;
+import com.ecommerce.backend.entity.OrderItem;
+import com.ecommerce.backend.entity.OrderStatusLog;
+import com.ecommerce.backend.entity.Product;
+import com.ecommerce.backend.entity.User;
 import com.ecommerce.backend.entity.enums.NotificationType;
 import com.ecommerce.backend.entity.enums.OrderStatus;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.mapper.OrderMapper;
-import com.ecommerce.backend.repository.*;
+import com.ecommerce.backend.repository.CartRepository;
+import com.ecommerce.backend.repository.CouponRepository;
+import com.ecommerce.backend.repository.OrderRepository;
+import com.ecommerce.backend.repository.ProductRepository;
+import com.ecommerce.backend.repository.UserRepository;
 import com.ecommerce.backend.service.Interface.CouponService;
 import com.ecommerce.backend.service.Interface.NotificationService;
 import com.ecommerce.backend.service.Interface.OrderService;
@@ -29,14 +40,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    private final OrderRepository     orderRepository;
-    private final UserRepository      userRepository;
-    private final CartRepository      cartRepository;
-    private final ProductRepository   productRepository;
-    private final CouponRepository    couponRepository;
-    private final CouponService       couponService;
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
+    private final CouponRepository couponRepository;
+    private final CouponService couponService;
     private final NotificationService notificationService;
-    private final OrderMapper         orderMapper;
+    private final OrderMapper orderMapper;
 
     @Override
     @Transactional
@@ -47,17 +58,19 @@ public class OrderServiceImpl implements OrderService {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_EMPTY));
 
-        if (cart.getItems().isEmpty())
+        if (cart.getItems().isEmpty()) {
             throw new AppException(ErrorCode.CART_EMPTY);
+        }
 
-        // Tính subtotal + trừ tồn kho
         BigDecimal subtotal = BigDecimal.ZERO;
         for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
-            if (!product.isActive())
+            if (!product.isActive()) {
                 throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-            if (product.getStock() < cartItem.getQuantity())
+            }
+            if (product.getStock() < cartItem.getQuantity()) {
                 throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
+            }
 
             subtotal = subtotal.add(
                     cartItem.getPriceSnap()
@@ -67,7 +80,6 @@ public class OrderServiceImpl implements OrderService {
             productRepository.save(product);
         }
 
-        // Xử lý coupon
         BigDecimal discountAmount = BigDecimal.ZERO;
         Coupon coupon = null;
         if (request.getCouponCode() != null && !request.getCouponCode().isBlank()) {
@@ -79,7 +91,6 @@ public class OrderServiceImpl implements OrderService {
 
         BigDecimal total = subtotal.subtract(discountAmount);
 
-        // Tạo Order
         Order order = Order.builder()
                 .user(user)
                 .coupon(coupon)
@@ -92,7 +103,6 @@ public class OrderServiceImpl implements OrderService {
                 .note(request.getNote())
                 .build();
 
-        // Tạo OrderItems
         List<OrderItem> orderItems = cart.getItems().stream()
                 .map(ci -> OrderItem.builder()
                         .order(order)
@@ -107,27 +117,33 @@ public class OrderServiceImpl implements OrderService {
 
         order.setItems(orderItems);
 
-        // Log trạng thái đầu tiên
         OrderStatusLog log = OrderStatusLog.builder()
                 .order(order)
                 .status(OrderStatus.PENDING)
-                .note("Đơn hàng vừa được tạo")
+                .note("Order has been created")
                 .build();
         order.getStatusLogs().add(log);
 
         Order saved = orderRepository.save(order);
 
-        // Xóa giỏ hàng
         cart.getItems().clear();
         cartRepository.save(cart);
 
-        // Thông báo
         notificationService.push(
-                userId, NotificationType.ORDER,
-                "Đặt hàng thành công! 🎉",
-                "Đơn hàng #" + saved.getId()
-                        + " đã được đặt. Tổng tiền: " + total + "đ",
+                userId,
+                NotificationType.ORDER,
+                "Order placed successfully",
+                "Order #" + saved.getId() + " has been placed. Total: " + total + " VND",
                 saved.getId());
+
+        if (coupon != null && discountAmount.compareTo(BigDecimal.ZERO) > 0) {
+            notificationService.push(
+                    userId,
+                    NotificationType.COUPON,
+                    "Coupon applied successfully",
+                    "Coupon " + coupon.getCode() + " was applied. You saved " + discountAmount + " VND.",
+                    saved.getId());
+        }
 
         return orderMapper.toResponse(saved);
     }
@@ -153,50 +169,49 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findByIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        if (order.getStatus() != OrderStatus.PENDING &&
-                order.getStatus() != OrderStatus.CONFIRMED)
+        if (order.getStatus() != OrderStatus.PENDING
+                && order.getStatus() != OrderStatus.CONFIRMED) {
             throw new AppException(ErrorCode.ORDER_CANNOT_CANCEL);
+        }
 
         order.setStatus(OrderStatus.CANCELLED);
 
-        // Hoàn lại tồn kho
         order.getItems().forEach(item -> {
-            Product p = item.getProduct();
-            p.setStock(p.getStock() + item.getQuantity());
-            productRepository.save(p);
+            Product product = item.getProduct();
+            product.setStock(product.getStock() + item.getQuantity());
+            productRepository.save(product);
         });
 
-        // Hoàn lại coupon
         if (order.getCoupon() != null) {
-            Coupon c = order.getCoupon();
-            c.setUsedCount(Math.max(0, c.getUsedCount() - 1));
-            couponRepository.save(c);
+            Coupon coupon = order.getCoupon();
+            coupon.setUsedCount(Math.max(0, coupon.getUsedCount() - 1));
+            couponRepository.save(coupon);
         }
 
         OrderStatusLog log = OrderStatusLog.builder()
                 .order(order)
                 .status(OrderStatus.CANCELLED)
-                .note("Người dùng hủy đơn hàng")
+                .note("Order was canceled by the user")
                 .build();
         order.getStatusLogs().add(log);
         orderRepository.save(order);
 
         notificationService.push(
-                userId, NotificationType.ORDER,
-                "Đơn hàng đã bị hủy",
-                "Đơn hàng #" + orderId + " đã được hủy thành công.",
+                userId,
+                NotificationType.ORDER,
+                "Order canceled",
+                "Order #" + orderId + " was canceled successfully.",
                 orderId);
     }
 
     @Override
     public PageResponse<OrderResponse> getAllOrders(String status, int page, int size) {
         Page<Order> orderPage;
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         if (status != null && !status.isBlank()) {
-            OrderStatus os = OrderStatus.valueOf(status.toUpperCase());
-            orderPage = orderRepository.findAllByStatus(os, pageable);
+            OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+            orderPage = orderRepository.findAllByStatus(orderStatus, pageable);
         } else {
             orderPage = orderRepository.findAll(pageable);
         }
@@ -206,19 +221,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse updateStatus(Long adminId, Long orderId,
-                                      UpdateOrderStatusRequest request) {
+    public OrderResponse updateStatus(Long adminId, Long orderId, UpdateOrderStatusRequest request) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        order.setStatus(request.getStatus());
+        OrderStatus nextStatus = request.getStatus();
+        validateStatusTransition(order.getStatus(), nextStatus);
+
+        order.setStatus(nextStatus);
 
         OrderStatusLog log = OrderStatusLog.builder()
                 .order(order)
-                .status(request.getStatus())
+                .status(nextStatus)
                 .changedBy(admin)
                 .note(request.getNote())
                 .build();
@@ -226,26 +243,45 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         notificationService.push(
-                order.getUser().getId(), NotificationType.ORDER,
-                "Cập nhật đơn hàng",
-                "Đơn hàng #" + orderId
-                        + " đã chuyển sang: " + request.getStatus().name(),
+                order.getUser().getId(),
+                NotificationType.ORDER,
+                "Order status updated",
+                "Order #" + orderId + " is now " + nextStatus.name(),
                 orderId);
 
         return orderMapper.toResponse(order);
     }
 
-    // ── Helper ─────────────────────────────────────────────
-
     private PageResponse<OrderResponse> toPageResponse(Page<Order> page) {
         return PageResponse.<OrderResponse>builder()
                 .content(page.getContent().stream()
-                        .map(orderMapper::toResponse).toList())
+                        .map(orderMapper::toResponse)
+                        .toList())
                 .page(page.getNumber())
                 .size(page.getSize())
                 .totalElements(page.getTotalElements())
                 .totalPages(page.getTotalPages())
                 .last(page.isLast())
                 .build();
+    }
+
+    private void validateStatusTransition(OrderStatus currentStatus, OrderStatus nextStatus) {
+        if (currentStatus == nextStatus) {
+            return;
+        }
+
+        boolean valid = switch (currentStatus) {
+            case PENDING -> nextStatus == OrderStatus.CONFIRMED
+                    || nextStatus == OrderStatus.CANCELLED;
+            case CONFIRMED -> nextStatus == OrderStatus.PROCESSING
+                    || nextStatus == OrderStatus.CANCELLED;
+            case PROCESSING -> nextStatus == OrderStatus.SHIPPING;
+            case SHIPPING -> nextStatus == OrderStatus.DELIVERED;
+            case DELIVERED, CANCELLED -> false;
+        };
+
+        if (!valid) {
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS_TRANSITION);
+        }
     }
 }

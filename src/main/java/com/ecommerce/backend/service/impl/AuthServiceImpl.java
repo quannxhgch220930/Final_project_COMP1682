@@ -8,12 +8,14 @@ import com.ecommerce.backend.dto.request.RegisterRequest;
 import com.ecommerce.backend.dto.request.ResetPasswordRequest;
 import com.ecommerce.backend.dto.response.AuthResponse;
 import com.ecommerce.backend.entity.User;
+import com.ecommerce.backend.entity.enums.NotificationType;
 import com.ecommerce.backend.entity.enums.Role;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.repository.UserRepository;
 import com.ecommerce.backend.service.EmailService;
 import com.ecommerce.backend.service.Interface.AuthService;
+import com.ecommerce.backend.service.Interface.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
+    private final NotificationService notificationService;
 
     @Value("${app.dev-mode:false}")
     private boolean devMode;
@@ -163,6 +166,13 @@ public class AuthServiceImpl implements AuthService {
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+
+        notificationService.push(
+                userId,
+                NotificationType.SYSTEM,
+                "Password changed",
+                "Your password was changed successfully.",
+                user.getId());
     }
 
     private AuthResponse loginByRole(LoginRequest request, Role expectedRole) {

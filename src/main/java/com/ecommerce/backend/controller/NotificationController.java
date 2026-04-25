@@ -9,7 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -19,20 +23,18 @@ import java.util.Map;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final UserHelper          userHelper;
+    private final UserHelper userHelper;
 
-    // GET /notifications
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<NotificationResponse>>> getAll(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(defaultValue = "0")  int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         return ResponseEntity.ok(ApiResponse.success(
                 notificationService.getMyNotifications(
                         userHelper.getUserId(userDetails), page, size)));
     }
 
-    // GET /notifications/unread-count
     @GetMapping("/unread-count")
     public ResponseEntity<ApiResponse<Map<String, Long>>> countUnread(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -40,11 +42,10 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("unread", count)));
     }
 
-    // PATCH /notifications/read-all
     @PatchMapping("/read-all")
     public ResponseEntity<ApiResponse<Void>> readAll(
             @AuthenticationPrincipal UserDetails userDetails) {
         notificationService.markAllRead(userHelper.getUserId(userDetails));
-        return ResponseEntity.ok(ApiResponse.success("Đã đánh dấu tất cả là đã đọc", null));
+        return ResponseEntity.ok(ApiResponse.success("Marked all notifications as read", null));
     }
 }

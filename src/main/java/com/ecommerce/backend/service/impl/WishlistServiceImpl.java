@@ -5,12 +5,14 @@ import com.ecommerce.backend.dto.response.WishlistItemResponse;
 import com.ecommerce.backend.entity.Product;
 import com.ecommerce.backend.entity.User;
 import com.ecommerce.backend.entity.Wishlist;
+import com.ecommerce.backend.entity.enums.NotificationType;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.mapper.WishlistMapper;
 import com.ecommerce.backend.repository.ProductRepository;
 import com.ecommerce.backend.repository.UserRepository;
 import com.ecommerce.backend.repository.WishlistRepository;
+import com.ecommerce.backend.service.Interface.NotificationService;
 import com.ecommerce.backend.service.Interface.WishlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,7 @@ public class WishlistServiceImpl implements WishlistService {
     private final ProductRepository  productRepository;
     private final UserRepository     userRepository;
     private final WishlistMapper     wishlistMapper;
+    private final NotificationService notificationService;
 
     @Override
     public PageResponse<WishlistItemResponse> getWishlist(Long userId,
@@ -62,6 +65,13 @@ public class WishlistServiceImpl implements WishlistService {
                 .user(user)
                 .product(product)
                 .build());
+
+        notificationService.push(
+                userId,
+                NotificationType.WISHLIST,
+                "Added to wishlist",
+                product.getName() + " was added to your wishlist.",
+                productId);
     }
 
     @Override
@@ -70,7 +80,17 @@ public class WishlistServiceImpl implements WishlistService {
         if (!wishlistRepository.existsByUserIdAndProductId(userId, productId))
             throw new AppException(ErrorCode.WISHLIST_ITEM_NOT_FOUND);
 
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
         wishlistRepository.deleteByUserIdAndProductId(userId, productId);
+
+        notificationService.push(
+                userId,
+                NotificationType.WISHLIST,
+                "Removed from wishlist",
+                product.getName() + " was removed from your wishlist.",
+                productId);
     }
 
     @Override
