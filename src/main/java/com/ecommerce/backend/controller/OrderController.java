@@ -5,7 +5,11 @@ import com.ecommerce.backend.common.PageResponse;
 import com.ecommerce.backend.common.UserHelper;
 import com.ecommerce.backend.dto.request.OrderRequest;
 import com.ecommerce.backend.dto.response.OrderResponse;
+import com.ecommerce.backend.dto.response.VnpayCheckoutResponse;
+import com.ecommerce.backend.entity.enums.PaymentMethod;
 import com.ecommerce.backend.service.Interface.OrderService;
+import com.ecommerce.backend.service.Interface.VnpayPaymentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     private final OrderService orderService;
+    private final VnpayPaymentService vnpayPaymentService;
     private final UserHelper   userHelper;
 
     @PostMapping
@@ -29,6 +34,24 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Đặt hàng thành công",
                         orderService.checkout(userHelper.getUserId(userDetails), request)));
+    }
+
+    @PostMapping("/checkout-vnpay")
+    public ResponseEntity<ApiResponse<VnpayCheckoutResponse>> checkoutVnpay(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody OrderRequest request,
+            HttpServletRequest httpRequest) {
+        request.setPaymentMethod(PaymentMethod.VNPAY);
+        Long userId = userHelper.getUserId(userDetails);
+        OrderResponse order = orderService.checkout(userId, request);
+        String paymentUrl = vnpayPaymentService.createPaymentUrl(userId, order.getId(), httpRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("VNPAY checkout created",
+                        VnpayCheckoutResponse.builder()
+                                .order(order)
+                                .paymentUrl(paymentUrl)
+                                .build()));
     }
 
     @GetMapping

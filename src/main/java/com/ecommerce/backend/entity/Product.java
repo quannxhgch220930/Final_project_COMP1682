@@ -43,10 +43,6 @@ public class Product extends BaseEntity {
     @Builder.Default
     private BigDecimal ratingAvg = BigDecimal.ZERO;
 
-    @Column(name = "rating_count")
-    @Builder.Default
-    private Integer ratingCount = 0;
-
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private boolean isActive = true;

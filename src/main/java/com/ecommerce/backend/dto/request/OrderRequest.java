@@ -1,5 +1,6 @@
 package com.ecommerce.backend.dto.request;
 
+import com.ecommerce.backend.entity.enums.PaymentMethod;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -23,4 +24,6 @@ public class OrderRequest {
     private String couponCode;
 
     private String note;
+
+    private PaymentMethod paymentMethod;
 }

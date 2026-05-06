@@ -14,5 +14,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByUserId(Long userId, Pageable pageable);
     Page<Order> findAllByStatus(OrderStatus status, Pageable pageable);
     Optional<Order> findByIdAndUserId(Long id, Long userId);
+    Optional<Order> findByVnpTxnRef(String vnpTxnRef);
 
 }

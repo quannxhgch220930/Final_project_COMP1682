@@ -14,6 +14,9 @@ public interface OrderMapper {
 
     @Mapping(target = "couponCode",
             expression = "java(order.getCoupon() != null ? order.getCoupon().getCode() : null)")
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userEmail", source = "user.email")
+    @Mapping(target = "userFullName", source = "user.fullName")
     @Mapping(target = "items",      source = "items")
     @Mapping(target = "statusLogs", source = "statusLogs")
     OrderResponse toResponse(Order order);

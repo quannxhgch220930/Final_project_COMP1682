@@ -1,6 +1,8 @@
 package com.ecommerce.backend.entity;
 
 import com.ecommerce.backend.entity.enums.OrderStatus;
+import com.ecommerce.backend.entity.enums.PaymentMethod;
+import com.ecommerce.backend.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,6 +44,22 @@ public class Order extends BaseEntity {
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false, length = 20)
+    @Builder.Default
+    private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false, length = 30)
+    @Builder.Default
+    private PaymentMethod paymentMethod = PaymentMethod.COD;
+
+    @Column(name = "vnp_txn_ref", length = 100, unique = true)
+    private String vnpTxnRef;
+
+    @Column(name = "vnp_transaction_no", length = 50)
+    private String vnpTransactionNo;
 
     @Column(name = "receiver_name", nullable = false, length = 100)
     private String receiverName;

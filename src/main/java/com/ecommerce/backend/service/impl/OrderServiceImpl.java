@@ -14,6 +14,7 @@ import com.ecommerce.backend.entity.Product;
 import com.ecommerce.backend.entity.User;
 import com.ecommerce.backend.entity.enums.NotificationType;
 import com.ecommerce.backend.entity.enums.OrderStatus;
+import com.ecommerce.backend.entity.enums.PaymentMethod;
 import com.ecommerce.backend.exception.AppException;
 import com.ecommerce.backend.exception.ErrorCode;
 import com.ecommerce.backend.mapper.OrderMapper;
@@ -52,6 +53,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponse checkout(Long userId, OrderRequest request) {
+        PaymentMethod paymentMethod = resolvePaymentMethod(request);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
@@ -97,6 +100,7 @@ public class OrderServiceImpl implements OrderService {
                 .subtotal(subtotal)
                 .discountAmount(discountAmount)
                 .total(total)
+                .paymentMethod(paymentMethod)
                 .receiverName(request.getReceiverName())
                 .receiverPhone(request.getReceiverPhone())
                 .receiverAddress(request.getReceiverAddress())
@@ -283,5 +287,12 @@ public class OrderServiceImpl implements OrderService {
         if (!valid) {
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS_TRANSITION);
         }
+    }
+
+    private PaymentMethod resolvePaymentMethod(OrderRequest request) {
+        if (request.getPaymentMethod() == null) {
+            return PaymentMethod.COD;
+        }
+        return request.getPaymentMethod();
     }
 }

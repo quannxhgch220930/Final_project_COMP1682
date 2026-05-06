@@ -36,6 +36,8 @@ public enum ErrorCode {
     ORDER_NOT_FOUND(404, "Order not found", HttpStatus.NOT_FOUND),
     ORDER_CANNOT_CANCEL(400, "Order cannot be canceled in its current status", HttpStatus.BAD_REQUEST),
     INVALID_ORDER_STATUS_TRANSITION(400, "Invalid order status transition", HttpStatus.BAD_REQUEST),
+    ORDER_ALREADY_PAID(400, "Order has already been paid", HttpStatus.BAD_REQUEST),
+    INVALID_PAYMENT_METHOD(400, "Invalid payment method for this operation", HttpStatus.BAD_REQUEST),
     CART_EMPTY(400, "Cart is empty", HttpStatus.BAD_REQUEST),
 
     // Coupon
